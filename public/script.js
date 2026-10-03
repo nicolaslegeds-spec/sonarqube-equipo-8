@@ -1081,7 +1081,7 @@ gestionarInputsPlazo();
     };
 }
 
-// ==========================================
+
 // 3. ENVÍO DE FORMULARIOS (API POST / PUT)
 // ==========================================
 function configurarFormularios() {
