@@ -432,12 +432,14 @@ function obtenerUsuarioActual() {
 async function obtenerTransaccionesUsuario() {
     const usuario = obtenerUsuarioActual();
 
-    if (!usuario?.id_usuario) {
-        throw new Error("No hay un usuario iniciado.");
+    // Sanitización estricta del ID para evitar CSRF / S8476
+    const idUsuarioSeguro = Number(usuario?.id_usuario);
+    if (!usuario || isNaN(idUsuarioSeguro) || idUsuarioSeguro <= 0) {
+        throw new Error("No hay un usuario iniciado válido.");
     }
 
     const res = await fetch(
-        `/api/transacciones?id_usuario=${usuario.id_usuario}`
+        `/api/transacciones?id_usuario=${idUsuarioSeguro}`
     );
 
     if (!res.ok) {
@@ -581,7 +583,7 @@ function configurarModales() {
                 }
 
             } catch (e) {
-
+               //Mensaje de error//
                 console.error(
                     "❌ Error al eliminar meta:",
                     e
@@ -732,7 +734,7 @@ function configurarModales() {
                         "✅ Límite eliminado correctamente"
                     );
 
-                    // Recargar toda la aplicación
+                    //Recargar toda la aplicación//
                     window.location.reload();
 
                 } else {
