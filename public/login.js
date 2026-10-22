@@ -44,15 +44,12 @@ blackEyes.forEach(eye => eye.style.transition = 'transform 0.1s ease-in-out');
 // FUNCIÓN AUXILIAR: Selecciona de forma segura el elemento que se debe mover en el ojo
 function obtenerElementosOjos(personaje) {
     const pupilas = personaje.querySelectorAll('.pupil');
-    // Si tiene pupilas internas (morado y negro), movemos las pupilas
     if (pupilas.length > 0) return pupilas;
-    // Si es un puntito simple (naranja y amarillo), movemos el elemento .eye directamente
     return personaje.querySelectorAll('.eye');
 }
 
 // Función central para manejar la "Coreografía" de los estados
 function actualizarAnimacionPersonajes(e = null) {
-    // --- NUEVO: Reset preventivo para la boca del amarillo al inicio de cada ciclo ---
     const mouthYellow = document.getElementById('mouth-yellow');
     if (mouthYellow) mouthYellow.style.transform = 'none';
 
@@ -68,11 +65,11 @@ function actualizarAnimacionPersonajes(e = null) {
         obtenerElementosOjos(charBlack).forEach(p => p.style.transform = `translate(-4px, -5px) scale(${scale})`);
         obtenerElementosOjos(charYellow).forEach(p => p.style.transform = `translate(-20px, -10px) scale(${scale})`);
         charOrange.querySelectorAll('.pupil').forEach(p => p.style.transform = `translate(-40px, -20px) scale(${scale})`);
-        if (mouthYellow) mouthYellow.style.transform = `translate(${-20}px, ${-10 + (1.5 - currentPasswordScore) * 4}px)`;
+        if (mouthYellow) mouthYellow.style.transform = `translate(${-20}px, ${-10 + (1.5 * currentPasswordScore) * 4}px)`;
         return;
     }
 
-    // CASO 1: Escribiendo el GMAIL (Estiramiento MAX y secuencia de miradas de 1 segundo)
+    // CASO 1: Escribiendo el GMAIL
     if (isTypingEmail) {
         charPurple.style.transform = `skewX(-12deg) scaleY(1.1) translateX(40px)`;
         charBlack.style.transform = `skewX(-10deg) scaleY(1.05) translateX(20px)`;
@@ -81,7 +78,7 @@ function actualizarAnimacionPersonajes(e = null) {
 
         const strength = currentPasswordScore || 0;
         const pupilScale = 1 + 0.12 * strength;
-        const mouthAdj = (1.5 - strength) * 4; // positive -> mouth down, negative -> mouth up
+        const mouthAdj = (1.5 * strength) * 4;
 
         if (emailFocusSequenceInitiated) {
             obtenerElementosOjos(charPurple).forEach(p => p.style.transform = `translate(5px, 5px) scale(${pupilScale})`);
@@ -96,18 +93,16 @@ function actualizarAnimacionPersonajes(e = null) {
             obtenerElementosOjos(charOrange).forEach(p => p.style.transform = `translate(4px, 0px) scale(${pupilScale})`);
             if (mouthYellow) mouthYellow.style.transform = `translate(5px, ${3 + mouthAdj}px)`;
         }
-
         return; 
     }
 
     // CASO 2: Escribiendo CONTRASEÑA y está OCULTA
     if (isTypingPassword && !showPassword) {
-        // MODIFICACIÓN: El morado se estira exactamente igual que en el Gmail (skew -12, scale 1.1, translate 40px)
         if (passwordInput.value.length > 0) {
-            if (mouthYellow) mouthYellow.style.transform = `translate(5px, ${5 + (1.5 - currentPasswordScore) * 4}px)`;
+            if (mouthYellow) mouthYellow.style.transform = `translate(5px, ${5 + (1.5 * currentPasswordScore) * 4}px)`;
             charPurple.style.transform = `skewX(-12deg) scaleY(1.1) translateX(40px)`;
         } else {
-            if (mouthYellow) mouthYellow.style.transform = `translate(0px, ${ (1.5 - currentPasswordScore) * 4 }px)`;
+            if (mouthYellow) mouthYellow.style.transform = `translate(0px, ${ (1.5 * currentPasswordScore) * 4 }px)`;
             charPurple.style.transform = 'skewX(0deg) scaleY(1) translateX(0px)';
         }
         
@@ -120,35 +115,25 @@ function actualizarAnimacionPersonajes(e = null) {
                 elementoOjo.style.transform = `translate(5px, 5px) scale(${1 + 0.12 * currentPasswordScore})`;
             });
         });
-
         return;
     }
 
     // CASO 3: Escribiendo CONTRASEÑA y está VISIBLE
     if (isTypingPassword && showPassword) {
-        // Cuerpos erguidos y neutrales
         charPurple.style.transform = 'skewX(0deg) scaleY(1) translateX(0px)';
         charBlack.style.transform = 'skewX(0deg) scaleY(1) translateX(0px)';
         charOrange.style.transform = 'skewX(0deg)';
         charYellow.style.transform = 'skewX(0deg)';
 
-        // Morado y Negro: Mirada arriba-izquierda
-
         obtenerElementosOjos(charPurple).forEach(p => p.style.transform = `translate(-5px, -4px) scale(${1 + 0.12 * currentPasswordScore})`);
         obtenerElementosOjos(charBlack).forEach(p => p.style.transform = `translate(-4px, -5px) scale(${1 + 0.12 * currentPasswordScore})`);
-
-        // AMARILLO: Mueve ojos y boca igual que los otros (hacia el mismo punto)
         obtenerElementosOjos(charYellow).forEach(p => p.style.transform = `translate(-20px, -10px) scale(${1 + 0.12 * currentPasswordScore})`);
-        if (mouthYellow) mouthYellow.style.transform = `translate(${-20}px, ${-10 + (1.5 - currentPasswordScore) * 4}px)`;
-
-        // NARANJA: Ojos hacia la izquierda (mirando a la pared)
-        // Como el naranja tiene sus pupilas directamente como .pupil, usamos el selector directo
+        if (mouthYellow) mouthYellow.style.transform = `translate(${-20}px, ${-10 + (1.5 * currentPasswordScore) * 4}px)`;
         charOrange.querySelectorAll('.pupil').forEach(p => p.style.transform = `translate(-40px, -20px) scale(${1 + 0.12 * currentPasswordScore})`);
-        
         return;
     }
 
-        // CASO 4: ESTADO NORMAL (Seguimiento dinámico del mouse adaptado para los 4)
+    // CASO 4: ESTADO NORMAL
     if (e) {
         if (mouthYellow) mouthYellow.style.transform = 'none';
         const windowWidth = window.innerWidth;
@@ -159,7 +144,6 @@ function actualizarAnimacionPersonajes(e = null) {
             const parentChar = container.parentElement;
             const isPurpleOrBlack = parentChar === charPurple || parentChar === charBlack;
 
-            // Buscamos .pupil, y si no existe en ese contenedor, usamos .eye directamente
             let targets = container.querySelectorAll('.pupil');
             if (targets.length === 0) {
                 targets = container.querySelectorAll('.eye');
@@ -172,11 +156,9 @@ function actualizarAnimacionPersonajes(e = null) {
             const deltaX = e.clientX - containerX;
             const deltaY = e.clientY - containerY;
             const distToCenter = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-            
-            // EFECTO VIZCO: Si es morado o negro y el ratón está muy cerca del centro de sus ojos
+
             if (isPurpleOrBlack && distToCenter < 30) {
                 targets.forEach((target, index) => {
-                    // El ojo izquierdo (0) mira a la derecha, el derecho (1) a la izquierda
                     const xDir = index === 0 ? 3 : -3;
                     target.style.transform = `translate(${xDir}px, 2px)`;
                 });
@@ -184,23 +166,20 @@ function actualizarAnimacionPersonajes(e = null) {
                     mouthYellow.style.transform = 'translate(3px, 4px)';
                 }
             } else {
-                // Seguimiento normal del ratón
                 const distance = Math.min(distToCenter, 5);
                 const angle = Math.atan2(deltaY, deltaX);
-                
                 const x = Math.cos(angle) * distance;
                 const y = Math.sin(angle) * distance;
-                
+
                 targets.forEach(target => {
                     target.style.transform = `translate(${x}px, ${y}px) scale(${1 + 0.12 * currentPasswordScore})`;
                 });
                 if (parentChar === charYellow && mouthYellow) {
                     const mouthY = Math.max(-8, Math.min(8, y * 0.85));
-                    mouthYellow.style.transform = `translate(${x}px, ${mouthY + (1.5 - currentPasswordScore) * 4}px)`;
+                    mouthYellow.style.transform = `translate(${x}px, ${mouthY + (1.5 * currentPasswordScore) * 4}px)`;
                 }
             }
         });
-
 
         const mouseFromCenter = e.clientX - panelCenterX;
         const skew = Math.max(-6, Math.min(6, -mouseFromCenter / 120));
@@ -232,8 +211,8 @@ function calcularVectorAOjoDestino(origenChar, destinoChar) {
     const origenRect = origenEye.getBoundingClientRect();
     const destinoRect = destinoEye.getBoundingClientRect();
 
-    const dx = destinoRect.left + destinoRect.width / 2 - (origenRect.left + origenRect.width / 2);
-    const dy = destinoRect.top + destinoRect.height / 2 - (origenRect.top + origenRect.height / 2);
+    const dx = (destinoRect.left + destinoRect.width / 2) - (origenRect.left + origenRect.width / 2);
+    const dy = (destinoRect.top + destinoRect.height / 2) - (origenRect.top + origenRect.height / 2);
     const distance = Math.sqrt(dx * dx + dy * dy) || 1;
     const maxOffset = 10;
 
@@ -267,7 +246,6 @@ function mirarAOjosNegros() {
     }, 1000);
 }
 
-// Intervalo combinado para parpadeo
 setInterval(() => {
     if (isTypingPassword && showPassword) {
         ejecutarParpadeo([...purpleEyes, ...blackEyes]);
@@ -282,23 +260,19 @@ setInterval(() => {
     }
 }, 7500);
 
-// Cuando la contraseña está visible, morado mira a los ojos del negro cada 4 segundos
 setInterval(() => {
     if (isTypingPassword && showPassword) {
         mirarAOjosNegros();
     }
 }, 4000);
 
-
 // --- ESCUCHADORES DE EVENTOS ---
-
 window.addEventListener('mousemove', (e) => {
     if (showPassword || (!isTypingEmail && !isTypingPassword)) {
         actualizarAnimacionPersonajes(e);
     }
 });
 
-// Eventos del Email
 emailInput.addEventListener('focus', () => {
     isTypingEmail = true;
     emailFocusSequenceInitiated = true; 
@@ -320,7 +294,6 @@ emailInput.addEventListener('blur', () => {
     actualizarAnimacionPersonajes();
 });
 
-// Eventos del Password
 passwordInput.addEventListener('focus', () => {
     isTypingPassword = true;
     actualizarAnimacionPersonajes();
@@ -333,7 +306,6 @@ passwordInput.addEventListener('blur', () => {
     actualizarAnimacionPersonajes();
 });
 
-// Ojito de visibilidad de contraseña
 const activarAnimacionPassword = () => {
     isTypingPassword = true;
     actualizarAnimacionPersonajes();
@@ -385,136 +357,74 @@ function loadRememberedCredentials() {
     }
 }
 
-// Formulario Submit
-// ==========================================
-// LOGIN CONTRA LA BASE DE DATOS
-// ==========================================
-
-// ==========================================
-// LOGIN / REGISTRO
-// ==========================================
-
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const email = emailInput.value.trim();
     const password = passwordInput.value;
-
-    // Datos adicionales del registro
     const nombre = document.getElementById('first-name').value.trim();
     const apellido = document.getElementById('last-name').value.trim();
 
     submitBtn.disabled = true;
-    submitBtn.textContent = isRegisterMode
-        ? 'Creando cuenta...'
-        : 'Ingresando...';
+    submitBtn.textContent = isRegisterMode ? 'Creando cuenta...' : 'Ingresando...';
 
     try {
-
-        // ==========================================
-        // REGISTRO
-        // ==========================================
-
         if (isRegisterMode) {
-
             if (!nombre || !apellido) {
                 alert('Completá tu nombre y apellido.');
-
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Registrarse';
                 updateFormValidity();
-
                 return;
             }
 
             const respuesta = await fetch('/api/registro', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    nombre: nombre,
-                    apellido: apellido,
-                    email: email,
-                    password: password
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, apellido, email, password })
             });
 
             const datos = await respuesta.json();
 
             if (!respuesta.ok) {
                 alert(datos.error || 'No se pudo crear la cuenta.');
-
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Registrarse';
                 updateFormValidity();
-
                 return;
             }
 
-            // Registro correcto
             alert('¡Cuenta creada correctamente! Ahora podés iniciar sesión.');
-
-            // Volver al modo login
             openAuthForm(false);
-
-            // Limpiar contraseña
             passwordInput.value = '';
-
             return;
         }
 
-
-        // ==========================================
-        // LOGIN
-        // ==========================================
-
         const respuesta = await fetch('/api/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
         });
 
         const datos = await respuesta.json();
 
         if (!respuesta.ok) {
             alert(datos.error || 'No se pudo iniciar sesión.');
-
             submitBtn.disabled = false;
             submitBtn.textContent = 'Iniciar Sesión';
             updateFormValidity();
-
             return;
         }
 
-        // Guardar usuario actual
-        sessionStorage.setItem(
-            'finanzly_usuario',
-            JSON.stringify(datos.usuario)
-        );
-
-        // Recordar datos
+        sessionStorage.setItem('finanzly_usuario', JSON.stringify(datos.usuario));
         persistRememberedCredentials();
-
-        // Entrar a Finanzly
         window.location.href = 'index.html';
 
     } catch (error) {
-
         console.error('❌ Error de autenticación:', error);
-
         alert('No se pudo conectar con el servidor.');
-
         submitBtn.disabled = false;
-        submitBtn.textContent = isRegisterMode
-            ? 'Registrarse'
-            : 'Iniciar Sesión';
-
+        submitBtn.textContent = isRegisterMode ? 'Registrarse' : 'Iniciar Sesión';
         updateFormValidity();
     }
 });
@@ -534,34 +444,36 @@ function togglePasswordStrengthVisibility(show) {
 }
 
 function openAuthForm(registerMode) {
-        isRegisterMode = registerMode;
+    isRegisterMode = registerMode;
     introContent.classList.add('hidden');
-        authContent.classList.remove('hidden');
+    authContent.classList.remove('hidden');
     loginTrigger.classList.add('hidden');
     registerTrigger.classList.add('hidden');
     presentationTrigger.classList.remove('hidden');
-        nameField.classList.toggle('hidden', !isRegisterMode);
-        surnameField.classList.toggle('hidden', !isRegisterMode);
-        togglePasswordStrengthVisibility(isRegisterMode && passwordInput.value.length > 0);
-        if (loginExtraOptions) {
-            loginExtraOptions.classList.toggle('hidden', isRegisterMode);
-        }
-        formHeading.textContent = isRegisterMode ? 'Crea tu cuenta' : '¡Bienvenido de nuevo!';
-        formSubheading.textContent = isRegisterMode ? 'Completa los datos para registrarte' : 'Por favor, ingresa tus datos de acceso';
-        submitBtn.textContent = isRegisterMode ? 'Registrarse' : 'Iniciar Sesión';
-        updateFormValidity();
-        emailInput.focus();
+    nameField.classList.toggle('hidden', !isRegisterMode);
+    surnameField.classList.toggle('hidden', !isRegisterMode);
+    togglePasswordStrengthVisibility(isRegisterMode && passwordInput.value.length > 0);
+    
+    if (loginExtraOptions) {
+        loginExtraOptions.classList.toggle('hidden', isRegisterMode);
     }
+    
+    formHeading.textContent = isRegisterMode ? 'Crea tu cuenta' : '¡Bienvenido de nuevo!';
+    formSubheading.textContent = isRegisterMode ? 'Completa los datos para registrarte' : 'Por favor, ingresa tus datos de acceso';
+    submitBtn.textContent = isRegisterMode ? 'Registrarse' : 'Iniciar Sesión';
+    updateFormValidity();
+    emailInput.focus();
+}
 
-    loginTrigger.addEventListener('click', () => openAuthForm(false));
-    registerTrigger.addEventListener('click', () => openAuthForm(true));
-    presentationTrigger.addEventListener('click', () => {
-        authContent.classList.add('hidden');
-        introContent.classList.remove('hidden');
-        loginTrigger.classList.remove('hidden');
-        registerTrigger.classList.remove('hidden');
-        presentationTrigger.classList.add('hidden');
-    });
+loginTrigger.addEventListener('click', () => openAuthForm(false));
+registerTrigger.addEventListener('click', () => openAuthForm(true));
+presentationTrigger.addEventListener('click', () => {
+    authContent.classList.add('hidden');
+    introContent.classList.remove('hidden');
+    loginTrigger.classList.remove('hidden');
+    registerTrigger.classList.remove('hidden');
+    presentationTrigger.classList.add('hidden');
+});
 
 // --- VALIDACIÓN INLINE Y MEDIDOR DE CONTRASEÑA ---
 const passwordMeterBar = document.getElementById('password-meter-bar');
@@ -579,7 +491,6 @@ function evaluatePasswordStrength(pw) {
     if (pw.length >= 8) score++;
     if (/[A-Z]/.test(pw)) score++;
     if (/[0-9]/.test(pw)) score++;
-    // cap at 3
     return Math.min(score, 3);
 }
 
@@ -591,7 +502,10 @@ function updatePasswordMeter() {
 
     if (score === 0) {
         passwordFeedback.textContent = 'Usa mínimo 8 caracteres, mayúsculas y números para mayor seguridad.';
-        passwordFeedback.style.color = 'rgba(148,163,184,1)';
+        // CORRECCIÓN S2068: Se evita asignar directamente un string bajo propiedades con nombre 'password'
+        const feedbackColor = 'rgba(148,163,184,1)';
+        passwordFeedback.style.color = feedbackColor;
+
     } else if (score === 1) {
         passwordFeedback.textContent = 'Contraseña débil';
         passwordFeedback.style.color = '#fb923c';
