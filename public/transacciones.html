@@ -93,12 +93,12 @@
             
             <form id="form-transaccion">
                 <div class="input-group">
-                    <label>Monto</label>
+                    <label for="monto-modal">Monto</label>
                     <input type="text" id="monto-modal" placeholder="0" required>
                 </div>
 
                 <div class="input-group">
-                    <label>Categoría</label>
+                    <label for="categoria-modal">Categoría</label>
                     <select id="categoria-modal" required>
                         <option value="Comida">Comida</option>
                         <option value="Transporte">Transporte</option>
@@ -110,12 +110,12 @@
                 </div>
 
                 <div class="input-group" id="contenedor-descripcion">
-                    <label>Descripción</label>
+                    <label for="descripcion-modal">Descripción</label>
                     <input type="text" id="descripcion-modal" placeholder="¿Para qué fue esto?">
                 </div>
 
                 <div class="input-group">
-                    <label>Fecha</label>
+                    <label for="fecha-modal">Fecha</label>
                     <input type="date" id="fecha-modal" required>
                 </div>
 
@@ -164,7 +164,7 @@
             </div>
             <form id="form-abono-meta">
                 <div class="input-group">
-                    <label>¿Cuánto dinero deseas sumar a esta meta?</label>
+                    <label for="monto-abono">¿Cuánto dinero deseas sumar a esta meta?</label>
                     <input type="text" id="monto-abono" placeholder="0" required>
                 </div>
                 <button type="submit" id="btn-regar-meta" class="btn-submit" disabled>Regar la meta</button>
